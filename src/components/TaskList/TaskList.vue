@@ -13,19 +13,47 @@
   import TaskListItem from '../TaskListItem/TaskListItem'
 
   export default {
-    name: 'TaskName',
+    name: 'TaskList',
+
     components: { TaskListItem },
-    methods: {
-      removeTask(taskId) {
-        this.$emit('remove-task', taskId)
+
+    props: {
+      task: { type: Object, required: true }
+    },
+    
+    data() {
+      return {
+        tasks: []
       }
     },
-    props: {
-      tasks: Array
-    }
+    
+    watch: {
+      task: function (newVal) {
+        this.tasks = [...this.tasks, newVal]
+      }
+    },
+
+    created() {
+      fetch('http://localhost:8081/api/tasks')
+        .then(res => res.json())
+        .then(tasks => this.tasks = [...tasks])
+        // eslint-disable-next-line
+        .catch(err => console.log('Error: \n' + err))
+    },
+
+    methods: {
+      removeTask(taskId) {
+        fetch(`http://localhost:8081/api/tasks/${ taskId }`, {
+          method: 'DELETE'
+        })
+          .then(() => this.tasks = this.tasks.filter(task => task.id !== taskId))
+          // eslint-disable-next-line
+          .catch(err => console.log('Error [TaskList.vue - removeTask]: \n' + err))
+      }
+    },
   }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+  
 </style>
