@@ -1,7 +1,7 @@
 <template>
   <li>
     <TaskListItemName :taskName="task.name" />
-    <RemoveTaskListItemButton v-on:remove-task="removeCharacter" />
+    <RemoveTaskListItemButton v-on:remove-task="removeTask" />
   </li>
 </template>
 
@@ -11,15 +11,18 @@
 
   export default {
     name: 'TaskListItem',
+
     components: { TaskListItemName, RemoveTaskListItemButton },
+
+    props: {
+      task: { type: Object, required: true }
+    },
+
     methods: {
-      removeCharacter() {
+      removeTask() {
         this.$emit('remove-task')
       }
     },
-    props: {
-      task: Object
-    }
   }
 </script>
 
