@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <TaskForm v-on:create-task="createTask" />
-    <TaskList :tasks="tasks" v-on:remove-task="removeTask" />
+    <TaskList :task="task" />
   </div>
 </template>
 
@@ -11,19 +11,27 @@
 
   export default {
     name: 'App',
+
     components: { TaskForm, TaskList },
-    methods: {
-      createTask(taskName) {
-        const newTask = { id: this.tasks.length, name: taskName }
-        this.tasks = [ ...this.tasks, newTask ]
-      },
-      removeTask(taskId) {
-        this.tasks = this.tasks.filter(task => task.id !== taskId)
-      }
-    },
+
     data() {
       return {
-        tasks: [{ id: 0, name: 'Task One', isComplete: false }]
+        task: {}
+      }
+    },
+
+    methods: {
+      createTask(taskName) {
+        const newTask = { name: taskName }
+        fetch('http://localhost:8081/api/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTask)
+        })
+          .then(res => res.json())
+          .then(data => this.task = data)
+          // eslint-disable-next-line
+          .catch(err => console.log('Error [App.vue - createTask]: \n' + err))
       }
     }
   }
